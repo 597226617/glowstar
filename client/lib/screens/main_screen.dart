@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hood/screens/news_screen.dart';
 import 'package:hood/screens/profile_screen.dart';
 import 'package:hood/screens/interest_selection_screen.dart';
+import 'package:hood/screens/study_groups_screen.dart';
 
 import 'conversations_screen.dart';
 
@@ -16,7 +17,7 @@ class MainScreenState extends State<MainScreen> {
   static List<Widget> _widgetOptions = <Widget>[
     NewsForm(),
     ConversationsForm(),
-    InterestSelectionScreen(),
+    StudyGroupsScreen(),
     ProfileForm()
   ];
   
@@ -45,8 +46,8 @@ class MainScreenState extends State<MainScreen> {
             title: Text('Messages'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            title: Text('Interests'),
+            icon: Icon(Icons.groups),
+            title: Text('Groups'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
