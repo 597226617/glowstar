@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.hood.server.services.DBInterface;
 import com.hood.server.services.BlobInterface;
+import com.hood.server.services.DatabaseInitializer;
 
 import com.hood.server.config.HoodConfig;
 
@@ -29,10 +30,8 @@ public class HoodServer
 			return false;
 		}
 		
-		if (!DBInterface.get().initialize())
-		{
-			return false;
-		}
+		// Initialize SQLite database
+		DatabaseInitializer.initialize(DBInterface.get());
 		
 		if (!BlobInterface.get().initialize())
 		{

@@ -10,8 +10,7 @@ import java.sql.*;
 import java.util.*;
 
 /**
- * Voice API for GlowStar
- * Handles voice cards, voice messages, voice rooms
+ * Voice API for GlowStar (SQLite)
  */
 public class VoiceApi {
     private final DBInterface db;
@@ -25,7 +24,7 @@ public class VoiceApi {
         String cardId = UUID.randomUUID().toString();
         try (Connection conn = db.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO voice_cards (id, user_id, audio_url, duration, waveform, created_at) VALUES (?,?,?,?,?,NOW())"
+                "INSERT INTO voice_cards (id, user_id, audio_url, duration, waveform, created_at) VALUES (?,?,?,?,?,datetime('now'))"
             );
             stmt.setString(1, cardId);
             stmt.setString(2, json.get("userId").getAsString());
@@ -33,6 +32,7 @@ public class VoiceApi {
             stmt.setInt(4, json.has("duration") ? json.get("duration").getAsInt() : 0);
             stmt.setString(5, json.has("waveform") ? json.get("waveform").getAsString() : "[]");
             stmt.executeUpdate();
+            conn.commit();
             res.status(201);
             return gson.toJson(Map.of("id", cardId, "success", true));
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public class VoiceApi {
                     "audioUrl", rs.getString("audio_url"),
                     "duration", rs.getInt("duration"),
                     "waveform", rs.getString("waveform"),
-                    "createdAt", rs.getTimestamp("created_at").toString()
+                    "createdAt", rs.getString("created_at")
                 ));
             }
             res.type("application/json");
@@ -74,15 +74,16 @@ public class VoiceApi {
         String msgId = UUID.randomUUID().toString();
         try (Connection conn = db.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO messages (id, conversation_id, sender_id, content, type, media_url, duration, created_at) VALUES (?,?,?,?, 'voice', ?,?, NOW())"
+                "INSERT INTO messages (id, conversation_id, sender_id, content, type, media_url, duration, created_at) VALUES (?,?,?,?, 'voice', ?,?, datetime('now'))"
             );
             stmt.setString(1, msgId);
             stmt.setString(2, json.get("conversationId").getAsString());
             stmt.setString(3, json.get("senderId").getAsString());
-            stmt.setString(4, ""); // voice message content is empty
+            stmt.setString(4, "");
             stmt.setString(5, json.get("audioUrl").getAsString());
             stmt.setInt(6, json.has("duration") ? json.get("duration").getAsInt() : 0);
             stmt.executeUpdate();
+            conn.commit();
             res.status(201);
             return gson.toJson(Map.of("id", msgId, "success", true));
         } catch (Exception e) {
@@ -97,7 +98,7 @@ public class VoiceApi {
         String roomId = UUID.randomUUID().toString();
         try (Connection conn = db.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO voice_rooms (id, creator_id, topic, max_participants, is_public, created_at) VALUES (?,?,?,?,?,NOW())"
+                "INSERT INTO voice_rooms (id, creator_id, topic, max_participants, is_public, created_at) VALUES (?,?,?,?,?,datetime('now'))"
             );
             stmt.setString(1, roomId);
             stmt.setString(2, json.get("creatorId").getAsString());
@@ -105,13 +106,14 @@ public class VoiceApi {
             stmt.setInt(4, json.has("maxParticipants") ? json.get("maxParticipants").getAsInt() : 8);
             stmt.setBoolean(5, json.has("isPublic") ? json.get("isPublic").getAsBoolean() : true);
             stmt.executeUpdate();
-            // Add creator as first participant
             PreparedStatement part = conn.prepareStatement(
-                "INSERT INTO room_participants (room_id, user_id, joined_at) VALUES (?,?,NOW())"
+                "INSERT INTO room_participants (id, room_id, user_id, joined_at) VALUES (?,?,?,datetime('now'))"
             );
-            part.setString(1, roomId);
-            part.setString(2, json.get("creatorId").getAsString());
+            part.setString(1, UUID.randomUUID().toString());
+            part.setString(2, roomId);
+            part.setString(3, json.get("creatorId").getAsString());
             part.executeUpdate();
+            conn.commit();
             res.status(201);
             return gson.toJson(Map.of("id", roomId, "success", true));
         } catch (Exception e) {
@@ -127,7 +129,7 @@ public class VoiceApi {
                 "SELECT vr.*, u.nickname, u.avatar, " +
                 "(SELECT COUNT(*) FROM room_participants WHERE room_id=vr.id) as participant_count " +
                 "FROM voice_rooms vr JOIN users u ON vr.creator_id=u.id " +
-                "WHERE vr.is_public=1 AND vr.id NOT IN (SELECT room_id FROM voice_rooms WHERE created_at < DATE_SUB(NOW(), INTERVAL 2 HOUR)) " +
+                "WHERE vr.is_public=1 AND vr.created_at > datetime('now', '-2 hours') " +
                 "ORDER BY vr.created_at DESC LIMIT 20"
             );
             ResultSet rs = stmt.executeQuery();
@@ -141,7 +143,7 @@ public class VoiceApi {
                     "topic", rs.getString("topic"),
                     "participantCount", rs.getInt("participant_count"),
                     "maxParticipants", rs.getInt("max_participants"),
-                    "createdAt", rs.getTimestamp("created_at").toString()
+                    "createdAt", rs.getString("created_at")
                 ));
             }
             res.type("application/json");

@@ -10,8 +10,7 @@ import java.sql.*;
 import java.util.*;
 
 /**
- * Post/Feed API for GlowStar Content Feed
- * Handles creating, reading, liking, commenting on posts
+ * Post/Feed API for GlowStar (SQLite)
  */
 public class PostApi {
     private final DBInterface db;
@@ -25,7 +24,7 @@ public class PostApi {
         String postId = UUID.randomUUID().toString();
         try (Connection conn = db.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO posts (id, user_id, content, type, media_url, latitude, longitude, created_at) VALUES (?,?,?,?,?,?,?,NOW())"
+                "INSERT INTO posts (id, user_id, content, type, media_url, latitude, longitude, created_at) VALUES (?,?,?,?,?,?,?,datetime('now'))"
             );
             stmt.setString(1, postId);
             stmt.setString(2, json.get("userId").getAsString());
@@ -37,6 +36,7 @@ public class PostApi {
             if (json.has("longitude")) stmt.setDouble(7, json.get("longitude").getAsDouble());
             else stmt.setNull(7, Types.DOUBLE);
             stmt.executeUpdate();
+            conn.commit();
             res.status(201);
             return gson.toJson(Map.of("id", postId, "success", true));
         } catch (Exception e) {
@@ -52,7 +52,6 @@ public class PostApi {
         int limit = Optional.ofNullable(req.queryParams("limit")).map(Integer::parseInt).orElse(20);
         int offset = page * limit;
         try (Connection conn = db.getConnection()) {
-            // Interest-based feed: show posts from users with similar interests
             PreparedStatement stmt = conn.prepareStatement(
                 "SELECT p.*, u.nickname, u.avatar, " +
                 "(SELECT COUNT(*) FROM post_likes WHERE post_id=p.id) as like_count, " +
@@ -90,7 +89,7 @@ public class PostApi {
                     "likeCount", rs.getInt("like_count"),
                     "commentCount", rs.getInt("comment_count"),
                     "isLiked", rs.getInt("is_liked") > 0,
-                    "createdAt", rs.getTimestamp("created_at").toString()
+                    "createdAt", rs.getString("created_at")
                 ));
             }
             res.type("application/json");
@@ -105,7 +104,6 @@ public class PostApi {
     public Object getPost(Request req, Response res) {
         String postId = req.params("id");
         try (Connection conn = db.getConnection()) {
-            // Get post
             PreparedStatement stmt = conn.prepareStatement(
                 "SELECT p.*, u.nickname, u.avatar, u.bio " +
                 "FROM posts p JOIN users u ON p.user_id=u.id WHERE p.id=?"
@@ -118,9 +116,8 @@ public class PostApi {
                 "nickname", rs.getString("nickname"), "avatar", rs.getString("avatar"),
                 "bio", rs.getString("bio"), "content", rs.getString("content"),
                 "type", rs.getString("type"), "mediaUrl", rs.getString("media_url"),
-                "createdAt", rs.getTimestamp("created_at").toString()
+                "createdAt", rs.getString("created_at")
             ));
-            // Get comments
             PreparedStatement cmtStmt = conn.prepareStatement(
                 "SELECT pc.*, u.nickname, u.avatar FROM post_comments pc " +
                 "JOIN users u ON pc.user_id=u.id WHERE pc.post_id=? ORDER BY pc.created_at ASC LIMIT 50"
@@ -133,7 +130,7 @@ public class PostApi {
                     "id", crs.getString("id"), "userId", crs.getString("user_id"),
                     "nickname", crs.getString("nickname"), "avatar", crs.getString("avatar"),
                     "content", crs.getString("content"),
-                    "createdAt", crs.getTimestamp("created_at").toString()
+                    "createdAt", crs.getString("created_at")
                 ));
             }
             post.put("comments", comments);
@@ -151,22 +148,22 @@ public class PostApi {
         JsonObject json = gson.fromJson(req.body(), JsonObject.class);
         String userId = json.get("userId").getAsString();
         try (Connection conn = db.getConnection()) {
-            // Check if already liked
             PreparedStatement check = conn.prepareStatement(
                 "SELECT id FROM post_likes WHERE post_id=? AND user_id=?"
             );
             check.setString(1, postId); check.setString(2, userId);
             if (check.executeQuery().next()) {
-                // Unlike
                 conn.prepareStatement("DELETE FROM post_likes WHERE post_id='" + postId + "' AND user_id='" + userId + "'").executeUpdate();
+                conn.commit();
                 return gson.toJson(Map.of("liked", false));
             } else {
-                // Like
                 PreparedStatement like = conn.prepareStatement(
-                    "INSERT INTO post_likes (post_id, user_id, created_at) VALUES (?,?,NOW())"
+                    "INSERT INTO post_likes (id, post_id, user_id, created_at) VALUES (?,?,?,datetime('now'))"
                 );
-                like.setString(1, postId); like.setString(2, userId);
+                like.setString(1, UUID.randomUUID().toString());
+                like.setString(2, postId); like.setString(3, userId);
                 like.executeUpdate();
+                conn.commit();
                 return gson.toJson(Map.of("liked", true));
             }
         } catch (Exception e) {
@@ -182,13 +179,14 @@ public class PostApi {
         String commentId = UUID.randomUUID().toString();
         try (Connection conn = db.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO post_comments (id, post_id, user_id, content, created_at) VALUES (?,?,?,?,NOW())"
+                "INSERT INTO post_comments (id, post_id, user_id, content, created_at) VALUES (?,?,?,?,datetime('now'))"
             );
             stmt.setString(1, commentId);
             stmt.setString(2, postId);
             stmt.setString(3, json.get("userId").getAsString());
             stmt.setString(4, json.get("content").getAsString());
             stmt.executeUpdate();
+            conn.commit();
             res.status(201);
             return gson.toJson(Map.of("id", commentId, "success", true));
         } catch (Exception e) {

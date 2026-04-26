@@ -18,6 +18,7 @@ dependencies {
 	compile 'org.glassfish.jersey.media:jersey-media-multipart:2.29.1'
 	compile 'org.glassfish.jersey.inject:jersey-hk2:2.29.1'
 	compile 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+	compile 'org.xerial:sqlite-jdbc:3.41.2.2'
 	compile 'javax.xml.bind:jaxb-api:2.3.0'
 	compile 'com.google.api-client:google-api-client:1.30.9'
 	compile 'com.google.guava:guava:29.0-jre'
