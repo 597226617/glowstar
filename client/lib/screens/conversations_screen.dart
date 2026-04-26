@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
-import 'package:hood/services/blob_services.dart';
+import 'package:glowstar/services/blob_services.dart';
 import 'package:intl/intl.dart';
 import 'package:web_socket_channel/io.dart';
 

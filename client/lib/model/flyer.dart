@@ -1,4 +1,4 @@
-import 'package:hood/model/position.dart';
+import 'package:glowstar/model/position.dart';
 import 'package:geolocator/geolocator.dart' as Geolocator;
 
 class Flyer {

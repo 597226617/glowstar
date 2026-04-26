@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hood/screens/news_screen.dart';
-import 'package:hood/screens/profile_screen.dart';
+import 'package:glowstar/screens/news_screen.dart';
+import 'package:glowstar/screens/profile_screen.dart';
 
 import 'conversations_screen.dart';
 

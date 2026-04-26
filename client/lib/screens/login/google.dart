@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
-import 'package:hood/screens/login_screen.dart';
+import 'package:glowstar/screens/login_screen.dart';
 import 'package:global_configuration/global_configuration.dart';
 
 class GoogleLoginView extends StatefulWidget implements LoginProvider {

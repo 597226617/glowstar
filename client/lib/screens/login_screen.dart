@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:hood/screens/login/facebook.dart';
-import 'package:hood/screens/login/google.dart';
+import 'package:glowstar/screens/login/facebook.dart';
+import 'package:glowstar/screens/login/google.dart';
 import 'package:flutter/material.dart';
 import 'login/session.dart';
 import 'package:http/http.dart' as http;

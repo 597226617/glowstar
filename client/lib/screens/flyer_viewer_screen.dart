@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hood/model/flyer.dart';
-import 'package:hood/screens/login/session.dart';
-import 'package:hood/screens/conversation_messages_screen.dart';
-import 'package:hood/services/blob_services.dart';
+import 'package:glowstar/model/flyer.dart';
+import 'package:glowstar/screens/login/session.dart';
+import 'package:glowstar/screens/conversation_messages_screen.dart';
+import 'package:glowstar/services/blob_services.dart';
 import 'package:geolocator/geolocator.dart';
 
 class FlyerViewerForm extends StatefulWidget {

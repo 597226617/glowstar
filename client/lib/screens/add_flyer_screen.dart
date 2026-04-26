@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:hood/services/flyer_services.dart';
+import 'package:glowstar/services/flyer_services.dart';
 import 'package:geolocator/geolocator.dart';
 
 class AddFlyerForm extends StatefulWidget {

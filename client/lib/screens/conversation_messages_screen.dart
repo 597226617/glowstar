@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
-import 'package:hood/screens/login/session.dart';
+import 'package:glowstar/screens/login/session.dart';
 import 'package:intl/intl.dart';
 import 'package:web_socket_channel/io.dart';
 

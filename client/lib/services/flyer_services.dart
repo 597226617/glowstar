@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:hood/screens/login/session.dart';
+import 'package:glowstar/screens/login/session.dart';
 import 'package:http/http.dart' as http;
-import 'package:hood/model/flyer.dart';
-import 'package:hood/model/position.dart';
+import 'package:glowstar/model/flyer.dart';
+import 'package:glowstar/model/position.dart';
 import 'package:global_configuration/global_configuration.dart';
 
 class FlyerServices {

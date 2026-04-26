@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hood/model/flyer.dart';
-import 'package:hood/screens/flyer_viewer_screen.dart';
-import 'package:hood/services/blob_services.dart';
-import 'package:hood/model/position.dart';
+import 'package:glowstar/model/flyer.dart';
+import 'package:glowstar/screens/flyer_viewer_screen.dart';
+import 'package:glowstar/services/blob_services.dart';
+import 'package:glowstar/model/position.dart';
 
 class FlyersGrid extends StatelessWidget {
   final List<Flyer> flyers;
