@@ -1,114 +1,158 @@
-import 'dart:convert';
-
-import 'package:glowstar/screens/login/facebook.dart';
-import 'package:glowstar/screens/login/google.dart';
 import 'package:flutter/material.dart';
-import 'login/session.dart';
-import 'package:http/http.dart' as http;
-import 'package:global_configuration/global_configuration.dart';
+import 'login/wechat_login.dart';
+import 'login/phone_login.dart';
 
-class LoginView extends StatefulWidget {
+/// Login Screen for GlowStar
+/// 
+/// Supports WeChat, Phone, Google, Facebook login
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() {
-    return LoginViewState();
-  }
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class LoginViewState extends State<LoginView> {
-  LOGIN_TYPES loginType = LOGIN_TYPES.NONE;
-  FacebookLoginView facebookProvider;
-  GoogleLoginView googleProvider;
-
-  @override
-  void initState() {
-    super.initState();
-
-    this.facebookProvider =
-        new FacebookLoginView(this.loginType, this.logIn, this.logOut);
-    this.googleProvider =
-        new GoogleLoginView(this.loginType, this.logIn, this.logOut);
-
-    useSessionIfPossible();
-  }
+class _LoginScreenState extends State<LoginScreen> {
+  String? _selectedMethod;
 
   @override
   Widget build(BuildContext context) {
+    if (_selectedMethod == 'wechat') {
+      return WeChatLoginScreen(
+        onSuccess: (userId, nickname, avatar) => _onLoginSuccess(userId, nickname, avatar),
+      );
+    }
+    if (_selectedMethod == 'phone') {
+      return PhoneLoginScreen(
+        onSuccess: (userId, phone) => _onPhoneLoginSuccess(userId, phone),
+      );
+    }
+
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[this.facebookProvider, this.googleProvider],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              const Spacer(flex: 2),
+              // App logo
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Colors.purple, Colors.blue],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: const Icon(Icons.star, size: 56, color: Colors.white),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                '发光星球 GlowStar',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '让相同兴趣的人，在地图上一起发光 ✨',
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              ),
+              const Spacer(flex: 3),
+              // Login options
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: () => setState(() => _selectedMethod = 'wechat'),
+                  icon: const Icon(Icons.chat, color: Colors.white),
+                  label: const Text('微信登录', style: TextStyle(fontSize: 16, color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF07C160),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: () => setState(() => _selectedMethod = 'phone'),
+                  icon: const Icon(Icons.phone, color: Colors.white),
+                  label: const Text('手机号登录', style: TextStyle(fontSize: 16, color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Divider
+              Row(
+                children: [
+                  Expanded(child: Divider(color: Colors.grey[300])),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text('其他登录', style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                  ),
+                  Expanded(child: Divider(color: Colors.grey[300])),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Other options
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildSocialLogin('Google', Icons.g_mobilescreen, Colors.red, () {}),
+                  const SizedBox(width: 24),
+                  _buildSocialLogin('Facebook', Icons.facebook, const Color(0xFF1877F2), () {}),
+                ],
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  logIn(LOGIN_TYPES loginType, String session, Map<String, Object> user) async {
-    this.setState(() {
-      this.loginType = loginType;
+  Widget _buildSocialLogin(String name, IconData icon, Color color, VoidCallback onTap) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.grey[300]!, width: 1),
+            ),
+            child: Icon(icon, size: 32, color: color),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(name, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+      ],
+    );
+  }
+
+  void _onLoginSuccess(String userId, String nickname, String? avatar) {
+    // Navigate to main screen
+    Navigator.of(context).pushReplacementNamed('/main', arguments: {
+      'userId': userId,
+      'nickname': nickname,
+      'avatar': avatar,
     });
-
-    String username = user["email"];
-
-    if (await SessionHelper.internal()
-        .saveSession(new Session(session, loginType, username))) {
-      goToApp(context, user, loginType);
-    }
   }
 
-  goToApp(context, userData, loginType) {
-    var provider;
-
-    switch (loginType) {
-      case LOGIN_TYPES.NONE:
-        return;
-      case LOGIN_TYPES.FACEBOOK:
-        provider = this.facebookProvider;
-        break;
-      case LOGIN_TYPES.GOOGLE:
-        provider = this.googleProvider;
-        break;
-    }
-
-    Navigator.pushNamed(context, '/',
-        arguments: {"userData": userData, "provider": provider});
-  }
-
-  logOut(context) async {
-    var response = await http.delete(
-        '${GlobalConfiguration().getString("apiUrl")}/session',
-        headers: await SessionHelper.internal().authHeaders());
-
-    if (response.statusCode != 200) {
-      return;
-    }
-
-    bool result = await SessionHelper.internal().removeSession();
-
-    if (result) {
-      Navigator.pushNamed(context, '/login');
-    }
-  }
-
-  void useSessionIfPossible() async {
-    var session = await SessionHelper.internal().getSession();
-
-    if (session == null) {
-      return;
-    }
-
-    var response = await http.get(
-        '${GlobalConfiguration().getString("apiUrl")}/session',
-        headers: {"session": session.session});
-
-    if (response.statusCode == 200) {
-      logIn(session.loginType, session.session, json.decode(response.body));
-    }
+  void _onPhoneLoginSuccess(String userId, String phone) {
+    Navigator.of(context).pushReplacementNamed('/main', arguments: {
+      'userId': userId,
+      'nickname': phone.substring(0, 3) + '****' + phone.substring(7),
+      'avatar': null,
+    });
   }
 }
-
-abstract class LoginProvider {
-  logout(BuildContext context);
-}
-
-enum LOGIN_TYPES { NONE, GOOGLE, FACEBOOK }
