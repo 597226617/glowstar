@@ -8,7 +8,7 @@ public class JaxRsApiResourceConfig
 	public static ResourceConfig create()
 	{
 		return new ResourceConfig()
-				.packages("com.hood.server.api")
+				.packages("com.hood.server.api", "com.glowstar.server.api")
 				.register(MultiPartFeature.class);
 	}
 }
