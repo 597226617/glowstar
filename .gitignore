@@ -1,16 +1,43 @@
-build/
-.gradlew
-.gradle/
+# Java
 *.class
-bin/
-*.db
-*.db.wal.*
 *.jar
-build/
+*.war
 target/
-out/
+build/
+.gradle/
+.gradlew
+bin/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+pubspec.lock
+build/
 *.iml
 .idea/
 .idea_modules/
+
+# SQLite
+*.db
+*.db.wal.*
+*.db-shm
+
+# IDE
+*.swp
+*.swo
+*~
+.vscode/
+.DS_Store
+
+# Node
 **/node_modules/*
+
+# Storage
 .storage
+
+# Env
+.env
+.env.local
