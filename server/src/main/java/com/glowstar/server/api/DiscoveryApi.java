@@ -53,11 +53,11 @@ public class DiscoveryApi {
                 trending.add(item);
             }
             
-            DBInterface.get().commit();
+            conn.commit();
             return Response.ok(gson.toJson(trending)).build();
         } catch (Exception e) {
             logger.error("Error getting trending interests", e);
-            try { DBInterface.get().rollback(); } catch (Exception ignored) {}
+            try { conn.rollback(); } catch (Exception ignored) {}
             return Response.status(500).entity("{\"error\":\"" + e.getMessage() + "\"}").build();
         }
     }
@@ -81,11 +81,11 @@ public class DiscoveryApi {
                 count = rs.getInt("count");
             }
             
-            DBInterface.get().commit();
+            conn.commit();
             return Response.ok("{\"onlineCount\":" + count + "}").build();
         } catch (Exception e) {
             logger.error("Error getting online count", e);
-            try { DBInterface.get().rollback(); } catch (Exception ignored) {}
+            try { conn.rollback(); } catch (Exception ignored) {}
             return Response.status(500).entity("{\"error\":\"" + e.getMessage() + "\"}").build();
         }
     }
@@ -111,12 +111,12 @@ public class DiscoveryApi {
             stmt.setInt(1, online ? 1 : 0);
             stmt.setString(2, userId);
             stmt.executeUpdate();
-            DBInterface.get().commit();
+            conn.commit();
             
             return Response.ok("{\"success\":true}").build();
         } catch (Exception e) {
             logger.error("Error updating user status", e);
-            try { DBInterface.get().rollback(); } catch (Exception ignored) {}
+            try { conn.rollback(); } catch (Exception ignored) {}
             return Response.status(500).entity("{\"error\":\"" + e.getMessage() + "\"}").build();
         }
     }

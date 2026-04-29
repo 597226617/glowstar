@@ -187,11 +187,11 @@ public class InterestTagsApi {
                 interests.add(interest);
             }
             
-            DBInterface.get().commit();
+            conn.commit();
             return Response.ok(gson.toJson(interests)).build();
         } catch (Exception e) {
             logger.error("Error getting user interests for: {}", userId, e);
-            try { DBInterface.get().rollback(); } catch (Exception ignored) {}
+            try { conn.rollback(); } catch (Exception ignored) {}
             return Response.status(500).entity("{\"error\":\"" + e.getMessage() + "\"}").build();
         }
     }
@@ -229,11 +229,11 @@ public class InterestTagsApi {
                 insertStmt.executeUpdate();
             }
             
-            DBInterface.get().commit();
+            conn.commit();
             return Response.ok("{\"success\":true}").build();
         } catch (Exception e) {
             logger.error("Error setting user interests for: {}", userId, e);
-            try { DBInterface.get().rollback(); } catch (Exception ignored) {}
+            try { conn.rollback(); } catch (Exception ignored) {}
             return Response.status(500).entity("{\"error\":\"" + e.getMessage() + "\"}").build();
         }
     }

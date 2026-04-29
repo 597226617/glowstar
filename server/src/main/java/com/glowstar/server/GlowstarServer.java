@@ -30,7 +30,7 @@ public class GlowstarServer
 			return false;
 		}
 		
-		// Initialize SQLite database
+		// Initialize PostgreSQL database
 		DatabaseInitializer.initialize(DBInterface.get());
 		
 		if (!BlobInterface.get().initialize())

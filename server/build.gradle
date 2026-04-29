@@ -1,12 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-group 'hood'
+group 'com.glowstar'
 version '1.0-SNAPSHOT'
 
-mainClassName = "com.hood.server.HoodServer"
+mainClassName = "com.glowstar.server.GlowstarServer"
 
-sourceCompatibility = 1.8
+sourceCompatibility = 17
 
 repositories {
 	mavenCentral()
@@ -18,7 +18,8 @@ dependencies {
 	compile 'org.glassfish.jersey.media:jersey-media-multipart:2.29.1'
 	compile 'org.glassfish.jersey.inject:jersey-hk2:2.29.1'
 	compile 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
-	compile 'org.xerial:sqlite-jdbc:3.41.2.2'
+	compile 'org.postgresql:postgresql:42.7.3'
+	compile 'com.zaxxer:HikariCP:5.1.0'
 	compile 'javax.xml.bind:jaxb-api:2.3.0'
 	compile 'com.google.api-client:google-api-client:1.30.9'
 	compile 'com.google.guava:guava:29.0-jre'
