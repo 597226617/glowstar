@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class NightModeScreen extends StatefulWidget {
   final String userId;
 
-  const NightModeScreen({Key? key, required this.userId}) : super(key: key);
+  const NightModeScreen({Key? key, this.userId = ''}) : super(key: key);
 
   @override
   _NightModeScreenState createState() => _NightModeScreenState();
