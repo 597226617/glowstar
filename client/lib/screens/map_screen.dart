@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hood/model/interest_tag.dart';
-import 'package:hood/services/matching_service.dart';
+import 'package:glowstar/model/interest_tag.dart';
+import 'package:glowstar/services/matching_service.dart';
 
 /// Map Screen for GlowStar
 /// 

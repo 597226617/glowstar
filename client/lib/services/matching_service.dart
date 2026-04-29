@@ -1,4 +1,4 @@
-import 'package:hood/model/interest_tag.dart';
+import 'package:glowstar/model/interest_tag.dart';
 import 'dart:math';
 
 /// Matching Service for GlowStar

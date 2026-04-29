@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hood/model/interest_tag.dart';
-import 'package:hood/services/matching_service.dart';
+import 'package:glowstar/model/interest_tag.dart';
+import 'package:glowstar/services/matching_service.dart';
 
 void main() {
   group('MatchingService', () {

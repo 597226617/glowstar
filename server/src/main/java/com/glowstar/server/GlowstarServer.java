@@ -17,11 +17,11 @@ import com.glowstar.server.services.DatabaseInitializer;
 
 import com.glowstar.server.config.HoodConfig;
 
-public class HoodServer
+public class GlowstarServer
 {
 	private static final int DEFAULT_PORT = 8080;
 	
-	private static final Logger logger = LoggerFactory.getLogger(HoodServer.class);
+	private static final Logger logger = LoggerFactory.getLogger(GlowstarServer.class);
 	
 	private static boolean initializeServices()
 	{
