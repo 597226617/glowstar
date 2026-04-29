@@ -39,6 +39,7 @@ android {
     }
 
     defaultConfig {
+        namespace "com.glowstar.app"
         applicationId "com.glowstar.app"
         minSdkVersion 16
         targetSdkVersion 28
