@@ -15,7 +15,7 @@ import com.glowstar.server.services.DBInterface;
 import com.glowstar.server.services.BlobInterface;
 import com.glowstar.server.services.DatabaseInitializer;
 
-import com.glowstar.server.config.HoodConfig;
+import com.glowstar.server.config.GlowstarConfig;
 
 public class GlowstarServer
 {
@@ -25,7 +25,7 @@ public class GlowstarServer
 	
 	private static boolean initializeServices()
 	{
-		if (HoodConfig.get() == null)
+		if (GlowstarConfig.get() == null)
 		{
 			return false;
 		}
@@ -49,7 +49,7 @@ public class GlowstarServer
 		}
 		
 		
-		HttpServer server = HttpServer.createSimpleServer("/", HoodConfig.get().serverPort());
+		HttpServer server = HttpServer.createSimpleServer("/", GlowstarConfig.get().serverPort());
 		
 		// api
 		HttpHandler apiHandler = new GrizzlyHttpContainerProvider()

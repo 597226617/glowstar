@@ -1,6 +1,6 @@
 package com.glowstar.server.config;
 
-public interface HoodConfigParameters
+public interface GlowstarConfigParameters
 {
 	int serverPort();
 	String localStorageDirectory();

@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.glowstar.server.config.HoodConfig;
+import com.glowstar.server.config.GlowstarConfig;
 
 public class BlobInterface
 {
@@ -37,7 +37,7 @@ public class BlobInterface
 	
 	private static BlobInterface createLocal()
 	{
-		File storageDirectory = new File(HoodConfig.get().localStorageDirectory());
+		File storageDirectory = new File(GlowstarConfig.get().localStorageDirectory());
 		
 		logger.info("Initialzing local stroage directory {}", storageDirectory.getAbsolutePath());
 		

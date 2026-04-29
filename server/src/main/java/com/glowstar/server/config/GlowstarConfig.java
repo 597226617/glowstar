@@ -12,46 +12,46 @@ import org.cfg4j.provider.ConfigurationProvider;
 import org.cfg4j.provider.ConfigurationProviderBuilder;
 import org.cfg4j.source.reload.strategy.PeriodicalReloadStrategy;
 
-public class HoodConfig
+public class GlowstarConfig
 {
-	private static final Logger logger = LoggerFactory.getLogger(HoodConfig.class);
-	
-	private static HoodConfigParameters instance;
-	
-	public static HoodConfigParameters get()
+	private static final Logger logger = LoggerFactory.getLogger(GlowstarConfig.class);
+
+	private static GlowstarConfigParameters instance;
+
+	public static GlowstarConfigParameters get()
 	{
 		if (instance != null)
 		{
 			return instance;
 		}
-		
-		synchronized (HoodConfigParameters.class)
+
+		synchronized (GlowstarConfigParameters.class)
 		{
 			if (instance != null)
 			{
 				return instance;
 			}
-			
-			instance = HoodConfig.create();
+
+			instance = GlowstarConfig.create();
 			return instance;
 		}
 	}
-	
-	private static HoodConfigParameters create()
+
+	private static GlowstarConfigParameters create()
 	{
 		try
 		{
-			ConfigFilesProvider configFilesProvider = new HoodConfigFilesProvider();
+			ConfigFilesProvider configFilesProvider = new GlowstarConfigFilesProvider();
 			ConfigurationSource source = new FilesConfigurationSource(configFilesProvider);
-			
+
 			logger.info("Loading config from: {}", configFilesProvider);
-			
+
 			ConfigurationProvider provider = new ConfigurationProviderBuilder()
 				.withConfigurationSource(source)
 				.withReloadStrategy(new PeriodicalReloadStrategy(5, TimeUnit.SECONDS))
 				.build();
-			
-			return provider.bind("", HoodConfigParameters.class);
+
+			return provider.bind("", GlowstarConfigParameters.class);
 		}
 		catch (Exception e)
 		{

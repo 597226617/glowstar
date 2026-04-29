@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:39117846579:android:8b1021172c89c4d1b8cb46",
         "android_client_info": {
-          "package_name": "com.hood.hood"
+          "package_name": "com.glowstar.app"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "39117846579-90drj93efv2cd8vmvl30gc0f0gir3lgn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.hood.hood",
+            "package_name": "com.glowstar.app",
             "certificate_hash": "84a448dd32a7e97bdf254fe6c56e635e823ad9ca"
           }
         },

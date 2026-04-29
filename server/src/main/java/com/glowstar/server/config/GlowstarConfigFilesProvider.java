@@ -13,30 +13,30 @@ import org.apache.commons.lang3.StringUtils;
 
 import org.cfg4j.source.context.filesprovider.ConfigFilesProvider;
 
-public class HoodConfigFilesProvider implements ConfigFilesProvider
+public class GlowstarConfigFilesProvider implements ConfigFilesProvider
 {
-	private static final Logger logger = LoggerFactory.getLogger(HoodConfigFilesProvider.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(GlowstarConfigFilesProvider.class);
+
 	private String getConfigFilePath()
 	{
 		File confDirectory = new File(System.getProperty("user.dir"), "conf");
-		
+
 		if (!confDirectory.isDirectory())
 		{
-			logger.error("Unable to find the `conf` directory under the current working directory", 
+			logger.error("Unable to find the `conf` directory under the current working directory",
 				System.getProperty("user.dir"));
 			return null;
 		}
-		
-		
-		String hoodEnvironment = System.getenv("HOOD_ENVIRONMENT");
-		
-		if (StringUtils.isEmpty(hoodEnvironment))
+
+
+		String glowstarEnvironment = System.getenv("GLOWSTAR_ENVIRONMENT");
+
+		if (StringUtils.isEmpty(glowstarEnvironment))
 		{
-			return new File(confDirectory, "dev.hood.properties").toString();
+			return new File(confDirectory, "dev.glowstar.properties").toString();
 		}
-		
-		return new File(confDirectory, hoodEnvironment + ".hood.properties").toString();
+
+		return new File(confDirectory, glowstarEnvironment + ".glowstar.properties").toString();
 	}
 	
 	@Override
