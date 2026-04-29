@@ -1,69 +1,150 @@
 /// Interest Tag Model for GlowStar
 /// 
-/// 12 categories with 100+ tags for deep interest matching
+/// Represents a user's interest for matching and discovery
 class InterestTag {
   final String id;
   final String name;
   final String category;
   final String icon;
+  final bool isSelected;
 
-  const InterestTag({
+  InterestTag({
     required this.id,
     required this.name,
     required this.category,
-    this.icon = '⭐',
+    required this.icon,
+    this.isSelected = false,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'category': category,
+      'icon': icon,
+      'isSelected': isSelected,
+    };
+  }
 
   factory InterestTag.fromJson(Map<String, dynamic> json) {
     return InterestTag(
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      category: json['category'] as String? ?? '',
-      icon: json['icon'] as String? ?? '⭐',
+      id: json['id'] as String,
+      name: json['name'] as String,
+      category: json['category'] as String,
+      icon: json['icon'] as String,
+      isSelected: json['isSelected'] as bool? ?? false,
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'category': category,
-    'icon': icon,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is InterestTag && runtimeType == other.runtimeType && id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
-
-  @override
-  String toString() => '$icon $name ($category)';
+  InterestTag copyWith({bool? isSelected}) {
+    return InterestTag(
+      id: id,
+      name: name,
+      category: category,
+      icon: icon,
+      isSelected: isSelected ?? this.isSelected,
+    );
+  }
 }
 
-/// Interest category color mapping for map display
-class InterestColors {
-  static const Map<String, int> categoryColors = {
-    '音乐': 0xFF9C27B0,   // Purple
-    '运动': 0xFFFF9800,   // Orange
-    '学习': 0xFF4CAF50,   // Green
-    '阅读': 0xFF2196F3,   // Blue
-    '游戏': 0xFFF44336,   // Red
-    '美食': 0xFF795548,   // Brown
-    '旅行': 0xFF009688,   // Teal
-    '电影': 0xFF3F51B5,   // Indigo
-    '艺术': 0xFFE91E63,   // Pink
-    '科技': 0xFF00BCD4,   // Cyan
-    '社交': 0xFFFFC107,   // Amber
-    '健身': 0xFFFF5722,   // Deep Orange
-  };
+/// Interest Categories for GlowStar
+class InterestCategories {
+  static const List<Map<String, dynamic>> categories = [
+    {
+      'id': 'music',
+      'name': 'Music',
+      'icon': '🎵',
+      'tags': ['Pop', 'Rock', 'Hip Hop', 'Classical', 'Jazz', 'Electronic', 'R&B', 'Country']
+    },
+    {
+      'id': 'sports',
+      'name': 'Sports',
+      'icon': '⚽',
+      'tags': ['Football', 'Basketball', 'Tennis', 'Swimming', 'Running', 'Yoga', 'Cycling', 'Gym']
+    },
+    {
+      'id': 'gaming',
+      'name': 'Gaming',
+      'icon': '🎮',
+      'tags': ['FPS', 'RPG', 'Strategy', 'Sports Games', 'Mobile Games', 'PC Games', 'Console', 'Indie']
+    },
+    {
+      'id': 'reading',
+      'name': 'Reading',
+      'icon': '📚',
+      'tags': ['Fiction', 'Non-fiction', 'Science', 'History', 'Philosophy', 'Poetry', 'Comics', 'Manga']
+    },
+    {
+      'id': 'art',
+      'name': 'Art',
+      'icon': '🎨',
+      'tags': ['Painting', 'Drawing', 'Photography', 'Design', 'Sculpture', 'Digital Art', 'Crafts', 'Calligraphy']
+    },
+    {
+      'id': 'food',
+      'name': 'Food',
+      'icon': '🍜',
+      'tags': ['Cooking', 'Baking', 'Street Food', 'Fine Dining', 'Vegetarian', 'Vegan', 'Coffee', 'Tea']
+    },
+    {
+      'id': 'travel',
+      'name': 'Travel',
+      'icon': '✈️',
+      'tags': ['Backpacking', 'Luxury', 'Adventure', 'Cultural', 'Beach', 'Mountain', 'City', 'Nature']
+    },
+    {
+      'id': 'tech',
+      'name': 'Technology',
+      'icon': '💻',
+      'tags': ['Programming', 'AI', 'Blockchain', 'Gadgets', 'Startups', 'Science', 'Robotics', 'VR/AR']
+    },
+    {
+      'id': 'movies',
+      'name': 'Movies & TV',
+      'icon': '🎬',
+      'tags': ['Action', 'Comedy', 'Drama', 'Sci-fi', 'Horror', 'Documentary', 'Anime', 'Series']
+    },
+    {
+      'id': 'study',
+      'name': 'Study',
+      'icon': '📖',
+      'tags': ['Math', 'Physics', 'Chemistry', 'English', 'History', 'Geography', 'Biology', 'Computer Science']
+    },
+    {
+      'id': 'social',
+      'name': 'Social',
+      'icon': '👥',
+      'tags': ['Networking', 'Volunteering', 'Community', 'Events', 'Parties', 'Meetups', 'Clubs', 'Organizations']
+    },
+    {
+      'id': 'fitness',
+      'name': 'Fitness',
+      'icon': '💪',
+      'tags': ['Cardio', 'Strength', 'Martial Arts', 'Dance', 'Hiking', 'Climbing', 'Skating', 'Surfing']
+    },
+  ];
 
-  static int getColor(String category) {
-    return categoryColors[category] ?? 0xFF9E9E9E; // Grey default
+  static List<InterestTag> getAllTags() {
+    List<InterestTag> allTags = [];
+    for (var category in categories) {
+      for (var tag in category['tags']) {
+        allTags.add(InterestTag(
+          id: '${category['id']}_$tag'.toLowerCase().replaceAll(' ', '_'),
+          name: tag,
+          category: category['name'],
+          icon: category['icon'],
+        ));
+      }
+    }
+    return allTags;
   }
 
-  static int getColorForTag(InterestTag tag) {
-    return getColor(tag.category);
+  static List<String> getTagsByCategory(String categoryId) {
+    for (var category in categories) {
+      if (category['id'] == categoryId) {
+        return List<String>.from(category['tags']);
+      }
+    }
+    return [];
   }
 }

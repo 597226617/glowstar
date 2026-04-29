@@ -1,130 +1,157 @@
-package com.glowstar.server.api;
+package com.hood.server.api;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.glowstar.server.services.DBInterface;
+import com.hood.server.model.UserProfile;
+import com.hood.server.service.NotificationService;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
-import java.sql.*;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * User API for GlowStar (SQLite)
+ * User API for GlowStar
+ * 
+ * Handles user registration, profile management, and matching
  */
 public class UserApi {
-    private final DBInterface db;
-    private final Gson gson = new Gson();
+    private Map<String, UserProfile> users = new ConcurrentHashMap<>();
+    private NotificationService notificationService;
 
-    public UserApi(DBInterface db) {
-        this.db = db;
+    public UserApi(NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 
-    /** GET /api/users/:id - Get user profile */
-    public Object getProfile(Request req, Response res) {
-        String userId = req.params("id");
-        try (Connection conn = db.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(
-                "SELECT u.*, COUNT(DISTINCT ui.id) as interest_count, " +
-                "COUNT(DISTINCT gm.group_id) as group_count " +
-                "FROM users u " +
-                "LEFT JOIN user_interests ui ON u.id = ui.user_id " +
-                "LEFT JOIN group_members gm ON u.id = gm.user_id " +
-                "WHERE u.id = ? GROUP BY u.id"
-            );
-            stmt.setString(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                res.type("application/json");
-                return gson.toJson(Map.of(
-                    "id", rs.getString("id"),
-                    "nickname", rs.getString("nickname"),
-                    "bio", rs.getString("bio"),
-                    "avatar", rs.getString("avatar"),
-                    "interestCount", rs.getInt("interest_count"),
-                    "groupCount", rs.getInt("group_count"),
-                    "createdAt", rs.getString("created_at")
-                ));
-            }
-            res.status(404);
-            return gson.toJson(Map.of("error", "User not found"));
-        } catch (Exception e) {
-            res.status(500);
-            return gson.toJson(Map.of("error", e.getMessage()));
+    /**
+     * Register new user
+     */
+    public Route registerUser = (Request request, Response response) -> {
+        String userId = request.params(":id");
+        String username = request.queryParams("username");
+        String displayName = request.queryParams("displayName");
+
+        UserProfile user = new UserProfile(userId, username, displayName);
+        users.put(userId, user);
+
+        response.status(201);
+        return Map.of("success", true, "userId", userId);
+    };
+
+    /**
+     * Get user profile
+     */
+    public Route getUserProfile = (Request request, Response response) -> {
+        String userId = request.params(":id");
+        UserProfile user = users.get(userId);
+
+        if (user == null) {
+            response.status(404);
+            return Map.of("error", "User not found");
         }
-    }
 
-    /** PUT /api/users/:id - Update user profile */
-    public Object updateProfile(Request req, Response res) {
-        String userId = req.params("id");
-        JsonObject json = gson.fromJson(req.body(), JsonObject.class);
-        try (Connection conn = db.getConnection()) {
-            conn.setAutoCommit(false);
-            if (json.has("nickname") || json.has("bio") || json.has("avatar")) {
-                PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE users SET nickname=?, bio=?, avatar=?, updated_at=datetime('now') WHERE id=?"
-                );
-                stmt.setString(1, json.has("nickname") ? json.get("nickname").getAsString() : "");
-                stmt.setString(2, json.has("bio") ? json.get("bio").getAsString() : "");
-                stmt.setString(3, json.has("avatar") ? json.get("avatar").getAsString() : "");
-                stmt.setString(4, userId);
-                stmt.executeUpdate();
-            }
-            if (json.has("interests")) {
-                conn.prepareStatement("DELETE FROM user_interests WHERE user_id='" + userId + "'").executeUpdate();
-                for (var interest : json.get("interests").getAsJsonArray()) {
-                    JsonObject obj = interest.getAsJsonObject();
-                    PreparedStatement stmt = conn.prepareStatement(
-                        "INSERT INTO user_interests (id, user_id, tag_id, tag_name, category) VALUES (?,?,?,?,?)"
-                    );
-                    stmt.setString(1, UUID.randomUUID().toString());
-                    stmt.setString(2, userId);
-                    stmt.setString(3, obj.get("id").getAsString());
-                    stmt.setString(4, obj.get("name").getAsString());
-                    stmt.setString(5, obj.get("category").getAsString());
-                    stmt.executeUpdate();
-                }
-            }
-            conn.commit();
-            res.type("application/json");
-            return gson.toJson(Map.of("success", true));
-        } catch (Exception e) {
-            res.status(500);
-            return gson.toJson(Map.of("error", e.getMessage()));
-        }
-    }
+        return user;
+    };
 
-    /** GET /api/users/:id/stats - Get user stats */
-    public Object getStats(Request req, Response res) {
-        String userId = req.params("id");
-        try (Connection conn = db.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(
-                "SELECT " +
-                "(SELECT COUNT(*) FROM posts WHERE user_id=?) as post_count, " +
-                "(SELECT COUNT(*) FROM follows WHERE follower_id=?) as match_count, " +
-                "(SELECT COUNT(DISTINCT gm.group_id) FROM group_members gm JOIN study_groups sg ON gm.group_id=sg.id WHERE gm.user_id=?) as group_count, " +
-                "(SELECT COALESCE(SUM(helpful_count),0) FROM answers WHERE user_id=?) as help_count, " +
-                "(SELECT level FROM user_levels WHERE user_id=?) as level, " +
-                "(SELECT xp FROM user_levels WHERE user_id=?) as xp"
-            );
-            for (int i = 1; i <= 6; i++) stmt.setString(i, userId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                res.type("application/json");
-                return gson.toJson(Map.of(
-                    "postCount", rs.getInt("post_count"),
-                    "matchCount", rs.getInt("match_count"),
-                    "groupCount", rs.getInt("group_count"),
-                    "helpCount", rs.getInt("help_count"),
-                    "level", rs.getInt("level"),
-                    "xp", rs.getInt("xp")
-                ));
-            }
-            res.status(404);
-            return "{}";
-        } catch (Exception e) {
-            res.status(500);
-            return gson.toJson(Map.of("error", e.getMessage()));
+    /**
+     * Update user profile
+     */
+    public Route updateUserProfile = (Request request, Response response) -> {
+        String userId = request.params(":id");
+        UserProfile user = users.get(userId);
+
+        if (user == null) {
+            response.status(404);
+            return Map.of("error", "User not found");
         }
-    }
+
+        // Update fields from request body
+        Map<String, Object> body = request.bodyAsClass(Map.class);
+        if (body.containsKey("displayName")) {
+            user.setDisplayName((String) body.get("displayName"));
+        }
+        if (body.containsKey("bio")) {
+            user.setBio((String) body.get("bio"));
+        }
+        if (body.containsKey("interests")) {
+            user.setInterests((List<String>) body.get("interests"));
+        }
+        if (body.containsKey("studySubjects")) {
+            user.setStudySubjects((List<String>) body.get("studySubjects"));
+        }
+
+        return Map.of("success", true);
+    };
+
+    /**
+     * Get nearby users
+     */
+    public Route getNearbyUsers = (Request request, Response response) -> {
+        String userId = request.params(":id");
+        double latitude = Double.parseDouble(request.queryParams("lat"));
+        double longitude = Double.parseDouble(request.queryParams("lng"));
+        double maxDistance = Double.parseDouble(request.queryParams("maxDistance", "50.0"));
+
+        UserProfile currentUser = users.get(userId);
+        if (currentUser == null) {
+            response.status(404);
+            return Map.of("error", "User not found");
+        }
+
+        List<UserProfile> nearbyUsers = users.values().stream()
+            .filter(u -> !u.getId().equals(userId))
+            .filter(u -> u.isNearby(latitude, longitude, maxDistance))
+            .toList();
+
+        return nearbyUsers;
+    };
+
+    /**
+     * Update user location
+     */
+    public Route updateUserLocation = (Request request, Response response) -> {
+        String userId = request.params(":id");
+        UserProfile user = users.get(userId);
+
+        if (user == null) {
+            response.status(404);
+            return Map.of("error", "User not found");
+        }
+
+        double latitude = Double.parseDouble(request.queryParams("lat"));
+        double longitude = Double.parseDouble(request.queryParams("lng"));
+
+        user.setLatitude(latitude);
+        user.setLongitude(longitude);
+
+        return Map.of("success", true);
+    };
+
+    /**
+     * Get match suggestions
+     */
+    public Route getMatchSuggestions = (Request request, Response response) -> {
+        String userId = request.params(":id");
+        UserProfile currentUser = users.get(userId);
+
+        if (currentUser == null) {
+            response.status(404);
+            return Map.of("error", "User not found");
+        }
+
+        // Simple matching based on interests
+        List<UserProfile> matches = users.values().stream()
+            .filter(u -> !u.getId().equals(userId))
+            .filter(u -> {
+                List<String> userInterests = currentUser.getInterests();
+                List<String> otherInterests = u.getInterests();
+                return userInterests != null && otherInterests != null &&
+                       !userInterests.isEmpty() && !otherInterests.isEmpty() &&
+                       userInterests.stream().anyMatch(otherInterests::contains);
+            })
+            .limit(10)
+            .toList();
+
+        return matches;
+    };
 }

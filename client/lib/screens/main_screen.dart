@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:glowstar/screens/map_screen.dart';
-import 'package:glowstar/screens/daily_match_screen.dart';
-import 'package:glowstar/screens/feed_screen.dart';
-import 'package:glowstar/screens/conversations_screen.dart';
-import 'package:glowstar/screens/profile_screen.dart';
-import 'package:glowstar/services/matching_service.dart';
+import 'package:hood/screens/news_screen.dart';
+import 'package:hood/screens/profile_screen.dart';
+import 'package:hood/screens/interest_selection_screen.dart';
+import 'package:hood/screens/study_groups_screen.dart';
+
+import 'conversations_screen.dart';
 
 /// Main Screen for GlowStar
 /// 
@@ -14,17 +14,6 @@ import 'package:glowstar/services/matching_service.dart';
 /// 2 - 💬 消息 (Conversations)
 /// 3 - 👤 我的 (Profile)
 class MainScreen extends StatefulWidget {
-  final String userId;
-  final String? nickname;
-  final String? avatar;
-
-  const MainScreen({
-    Key? key,
-    required this.userId,
-    this.nickname,
-    this.avatar,
-  }) : super(key: key);
-
   @override
   MainScreenState createState() => MainScreenState();
 }
@@ -33,37 +22,20 @@ class MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   late MatchingService _matchingService;
   
-  late List<Widget> _screens;
-
-  @override
-  void initState() {
-    super.initState();
-    _matchingService = MatchingService(baseUrl: 'http://10.0.2.2:8080'); // Android emulator
-    
-    _screens = [
-      MapScreen(
-        userId: widget.userId,
-        matchingService: _matchingService,
-      ),
-      DailyMatchScreen(
-        userId: widget.userId,
-        matchingService: _matchingService,
-      ),
-      ConversationsForm(),
-      _buildProfileScreen(),
-    ];
-  }
-
-  Widget _buildProfileScreen() {
-    return ProfileForm();
-  }
-
+  static List<Widget> _widgetOptions = <Widget>[
+    NewsForm(),
+    ConversationsForm(),
+    StudyGroupsScreen(),
+    ProfileForm()
+  ];
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
+      appBar: AppBar(
+        title: Center(
+          child: Text("GlowStar"),
+        )
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -108,7 +80,23 @@ class MainScreenState extends State<MainScreen> {
             unselectedFontSize: 11,
             onTap: _onItemTapped,
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            title: Text('Messages'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.groups),
+            title: Text('Groups'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            title: Text('Profile'),
+          ),
+        ],
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
     );
   }
