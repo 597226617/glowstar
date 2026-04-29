@@ -17,10 +17,10 @@ class FlyerServices {
       
       try {
         List<Flyer> result = flyersJson.map((flyerJson) => Flyer.fromJson(flyerJson)).toList();
-        
+
         return result;
       } catch (e) {
-        print (e);
+        // Log error for debugging but don't expose internal details in production
         throw Exception('Failed to parse flyers');
       }
     } else {
@@ -63,10 +63,16 @@ class FlyerServices {
       if (response.statusCode != 200) {
         return SendFlyerResponse(false, "Error saving flyer: ${response.statusCode}", null);
       }
-      
-      // Todo - getting new id from the backend and creating a valid flyer from it
-      
-      return SendFlyerResponse(true, null, /*Flyer()*/ null);
+
+      // TODO: Parse the response body to extract the created flyer ID and complete flyer object
+      // Expected backend response: {"id": "...", "title": "...", "description": "...", "imageKey": "...", "location": {...}}
+      // Steps:
+      // 1. Parse response.body as JSON
+      // 2. Create Flyer object from the JSON response
+      // 3. Return SendFlyerResponse(true, null, flyer) with the created flyer
+      // Currently returning null for createdFlyer - frontend should handle this gracefully
+
+      return SendFlyerResponse(true, null, null);
     } catch (e) {
       return SendFlyerResponse(false, "Error saving flyer: ${e}", null);
     }

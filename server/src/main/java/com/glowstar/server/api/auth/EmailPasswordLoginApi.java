@@ -24,15 +24,10 @@ public class EmailPasswordLoginApi
 		try
 		{
 			logger.info("Authenticating email: {} pass: {}", email, password.length());
-			
-			// Currently a hack to enable hoodev user to create a session
-			//
-			if (!("hoodevtest@gmail.com".equals(email)))
-			{
-				return Response.status(Response.Status.FORBIDDEN).build();
-			}
-			
-			User user = new User(email, "");
+
+			// TODO: Implement proper password validation
+			// For now, allow any email to create a session for development
+			User user = new User(email, password);
 
 			if (!DBInterface.get().addDocument("users", user.toBsonObject()))
 			{

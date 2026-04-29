@@ -44,7 +44,7 @@ class ConversationsFormState extends State<ConversationsForm> {
     });
   }
 
-  // hack
+  /// Parse JSON data asynchronously from WebSocket stream
   Future<List<dynamic>> asyncParse(jsonData) async
   {
     return json.decode(jsonData);
