@@ -40,5 +40,4 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'maven'
-      - run: cd server && mvn compile -q
+      - run: cd server && ./gradlew compileJava
