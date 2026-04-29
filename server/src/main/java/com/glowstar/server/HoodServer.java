@@ -1,7 +1,7 @@
 package com.glowstar.server;
 
-import com.hood.server.ws.ConversationWebSocket;
-import com.hood.server.ws.MessagesWebSocket;
+import com.glowstar.server.ws.ConversationWebSocket;
+import com.glowstar.server.ws.MessagesWebSocket;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
@@ -11,11 +11,11 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpContainerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hood.server.services.DBInterface;
-import com.hood.server.services.BlobInterface;
-import com.hood.server.services.DatabaseInitializer;
+import com.glowstar.server.services.DBInterface;
+import com.glowstar.server.services.BlobInterface;
+import com.glowstar.server.services.DatabaseInitializer;
 
-import com.hood.server.config.HoodConfig;
+import com.glowstar.server.config.HoodConfig;
 
 public class HoodServer
 {

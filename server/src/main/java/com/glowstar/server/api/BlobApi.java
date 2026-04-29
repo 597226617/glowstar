@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
-import com.hood.server.services.BlobInterface;
+import com.glowstar.server.services.BlobInterface;
 
 @Path("file")
 public class BlobApi

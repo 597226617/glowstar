@@ -1,4 +1,4 @@
-package com.hood.server.service;
+package com.glowstar.server.service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

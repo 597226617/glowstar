@@ -1,8 +1,8 @@
 package com.glowstar.server.api.auth;
 
-import com.hood.server.model.Session;
-import com.hood.server.model.User;
-import com.hood.server.services.DBInterface;
+import com.glowstar.server.model.Session;
+import com.glowstar.server.model.User;
+import com.glowstar.server.services.DBInterface;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

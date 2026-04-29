@@ -4,9 +4,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.hood.server.model.User;
-import com.hood.server.services.DBInterface;
-import com.hood.server.session.SessionManager;
+import com.glowstar.server.model.User;
+import com.glowstar.server.services.DBInterface;
+import com.glowstar.server.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

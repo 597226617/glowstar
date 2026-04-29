@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Maps;
-import com.hood.server.api.auth.Secured;
+import com.glowstar.server.api.auth.Secured;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +20,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.databind.ObjectMapper; 
 
-import com.hood.server.services.DBInterface;
-import com.hood.server.model.Flyer;
+import com.glowstar.server.services.DBInterface;
+import com.glowstar.server.model.Flyer;
 
 @Secured
 @Path("flyers")

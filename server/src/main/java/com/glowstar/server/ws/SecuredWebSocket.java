@@ -1,6 +1,6 @@
 package com.glowstar.server.ws;
 
-import com.hood.server.session.SessionManager;
+import com.glowstar.server.session.SessionManager;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.websockets.*;
 import org.slf4j.Logger;

@@ -1,9 +1,9 @@
 package com.glowstar.server.api.auth;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hood.server.model.User;
-import com.hood.server.services.DBInterface;
-import com.hood.server.session.SessionManager;
+import com.glowstar.server.model.User;
+import com.glowstar.server.services.DBInterface;
+import com.glowstar.server.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

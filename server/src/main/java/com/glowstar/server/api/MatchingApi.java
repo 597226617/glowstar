@@ -1,6 +1,6 @@
-package com.hood.server.api;
+package com.glowstar.server.api;
 
-import com.hood.server.model.UserProfile;
+import com.glowstar.server.model.UserProfile;
 import spark.Request;
 import spark.Response;
 import spark.Route;

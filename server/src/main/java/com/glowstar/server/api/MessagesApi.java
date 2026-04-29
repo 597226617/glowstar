@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.util.Sets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.hood.server.model.Conversation;
-import com.hood.server.model.Flyer;
-import com.hood.server.model.Message;
-import com.hood.server.model.User;
-import com.hood.server.services.DBInterface;
+import com.glowstar.server.model.Conversation;
+import com.glowstar.server.model.Flyer;
+import com.glowstar.server.model.Message;
+import com.glowstar.server.model.User;
+import com.glowstar.server.services.DBInterface;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +17,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static com.hood.server.services.DBInterface.LogicalOperator;
-import static com.hood.server.services.DBInterface.Operator;
-import static com.hood.server.services.DBInterface.OperatorAndValue;
+import static com.glowstar.server.services.DBInterface.LogicalOperator;
+import static com.glowstar.server.services.DBInterface.Operator;
+import static com.glowstar.server.services.DBInterface.OperatorAndValue;
 
 public class MessagesApi
 {

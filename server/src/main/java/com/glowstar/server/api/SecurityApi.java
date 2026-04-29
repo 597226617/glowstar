@@ -1,4 +1,4 @@
-package com.hood.server.api;
+package com.glowstar.server.api;
 
 import spark.Request;
 import spark.Response;

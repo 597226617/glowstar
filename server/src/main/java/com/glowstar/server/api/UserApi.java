@@ -1,7 +1,7 @@
-package com.hood.server.api;
+package com.glowstar.server.api;
 
-import com.hood.server.model.UserProfile;
-import com.hood.server.service.NotificationService;
+import com.glowstar.server.model.UserProfile;
+import com.glowstar.server.service.NotificationService;
 import spark.Request;
 import spark.Response;
 import spark.Route;

@@ -1,4 +1,4 @@
-package com.hood.server.model;
+package com.glowstar.server.model;
 
 import java.util.List;
 
